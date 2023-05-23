@@ -11,18 +11,18 @@ Steps to download VBCC, build it, and verify it by building a simple hello world
 > make hello
 ```
 
-The VBCC compiler will be in the folder "sdk".
+The compiled VBCC compiler and Amiga SDK (aka NDK) will be in the folder `./sdk`.
 
 The other folders and files can be deleted.
 
 ## Installation
 
-The compiler can be found in the `src` folder. You can then copy it to its final destination, such as the
-`/usr/local` or the `/opt` directory.
+The compiler and the Amiga SDK (aka NDK) can be found in the `sdk` folder. You can then copy it to its final destination, such as the `/usr/local` or the `/opt` directory.
 
 Finally, add the VBCC executables to the path and set the VBCC environment variable.
 You can do this in the config file of your shell, such as .zhrc (zsh) or .bashrc (bash)
 
+Example, assuming installation in `/opt`:
 ```bash
 export PATH=/opt/vbcc/sdk/vbcc/bin:$PATH
 export VBCC=/opt/vbcc/sdk/vbcc
