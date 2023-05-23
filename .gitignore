@@ -1,1 +1,11 @@
 .idea/
+sdk/
+downloads/
+config/
+vasm/
+vbcc/
+vlink/
+vbcc_target*/
+.DS_Store
+hello
+*.info
