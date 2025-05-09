@@ -1,6 +1,5 @@
 shell=/bin/bash
 
-URL_AMIGA_NDK39=https://os.amigaworld.de/download.php?id=3
 URL_TARGETS_DIR=http://phoenix.owl.de/vbcc/2022-05-22
 URL_VBCC=http://phoenix.owl.de/tags/vbcc.tar.gz
 URL_VLINK=http://phoenix.owl.de/tags/vlink.tar.gz
@@ -23,7 +22,7 @@ all:
 
 hello:
 	@echo "building test program"
-	PATH=./sdk/vbcc/bin:$$PATH VBCC=./sdk/vbcc ./sdk/vbcc/bin/vc -L./sdk/NDK_3.9/Include/linker_libs -I./sdk/NDK_3.9/Include/include_h +kick13 hello.c -lamiga -lauto -o hello
+	PATH=./sdk/vbcc/bin:$$PATH VBCC=./sdk/vbcc ./sdk/vbcc/bin/vc  +tos16 -o hello.tos hello.c
 	@echo "DONE - hello"
 
 .PHONY: download
@@ -31,11 +30,9 @@ download:
 	@mkdir -p $(DOWNLOAD_DIR)
 	@wget $(URL_VLINK) -O $(DOWNLOAD_DIR)/vlink.tar.gz
 	@wget $(URL_VASM) -O $(DOWNLOAD_DIR)/vasm.tar.gz
-	@wget $(URL_TARGETS_DIR)/vbcc_target_m68k-amigaos.lha -P $(DOWNLOAD_DIR)
-	@wget $(URL_TARGETS_DIR)/vbcc_target_m68k-kick13.lha -P $(DOWNLOAD_DIR)
+	@wget $(URL_TARGETS_DIR)/vbcc_target_m68k-atari.tar.gz -P $(DOWNLOAD_DIR)
 	@wget $(URL_TARGETS_DIR)/vbcc_unix_config.tar.gz -P $(DOWNLOAD_DIR)
 	@wget $(URL_VBCC) -O $(DOWNLOAD_DIR)/vbcc.tar.gz
-	@wget $(URL_AMIGA_NDK39) -O $(DOWNLOAD_DIR)/NDK39.lha
 	@echo "DONE - download"
 
 .PHONY: clean
@@ -44,8 +41,7 @@ clean:
 	-@rm -R ./vbcc
 	-@rm -R ./vasm
 	-@rm -R ./vlink
-	-@rm -R ./vbcc_target_m68k-amigaos
-	-@rm -R ./vbcc_target_m68k-kick13
+	-@rm -R ./vbcc_target_m68k-atari
 	-@rm -R ./config
 	-@rm -R ./sdk
 	-@rm -R $(DOWNLOAD_DIR)
@@ -53,7 +49,7 @@ clean:
 	@echo "DONE - clean"
 
 .PHONY: setup
-setup: build_compiler amiga_targets build_asm build_linker install_ndk
+setup: build_compiler atari_targets build_asm build_linker 
 	@echo "DONE - setup"
 
 .PHONY: build_compiler
@@ -66,18 +62,15 @@ build_compiler:
 	@cp -r ./vbcc/bin ./sdk/vbcc
 	@echo "DONE - build_compiler"
 
-# EXPAND AMIGA TARGETS
-.PHONY: amiga_targets
-amiga_targets:
+# EXPAND ATARI TARGETS
+.PHONY: atari_targets
+atari_targets:
 	@mkdir -p ./sdk/vbcc
-	@lha x $(DOWNLOAD_DIR)/vbcc_target_m68k-amigaos.lha
-	@cp -R vbcc_target_m68k-amigaos/* ./sdk/vbcc
-	@lha x $(DOWNLOAD_DIR)/vbcc_target_m68k-kick13.lha
-	@cp -R vbcc_target_m68k-kick13/* ./sdk/vbcc
+	@tar xvfz $(DOWNLOAD_DIR)/vbcc_target_m68k-atari.tar.gz -C .
+	@cp -R vbcc_target_m68k-atari/* ./sdk/vbcc
 	@tar xvfz $(DOWNLOAD_DIR)/vbcc_unix_config.tar.gz -C .
-	@rm -R ./sdk/vbcc/config
-	@cp -R ./config ./sdk/vbcc
-	@echo "DONE - amiga_targets"
+	@cp -R ./config ./sdk/vbcc	
+	@echo "DONE - atari_targets"
 
 # INSTALL VASM CROSS-ASSEMBLER
 .PHONY: build_asm
@@ -98,9 +91,3 @@ build_linker:
 	@cp ./vlink/vlink ./sdk/vbcc/bin
 	@echo "DONE - build_linker"
 
-# INSTALL AMIGA NDK
-.PHONY: install_ndk
-install_ndk:
-	@lha x $(DOWNLOAD_DIR)/NDK39.lha
-	@mv NDK_3.9 ./sdk
-	@echo "DONE - install_ndk"
